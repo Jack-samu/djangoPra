@@ -9,4 +9,5 @@ urlpatterns = [
     path("turnaround/", views.turn_around, name='aaaaa'),
     path("sayhello;<str:name>/", views.sayhello, name="sayhello"),
     path("say/", views.echo),
+    path("what/", views.whatever),
 ]
