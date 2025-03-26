@@ -4,3 +4,4 @@ __init__.py
 migrations/
 models.py  
 tests.py  
+__pycache__/

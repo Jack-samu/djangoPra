@@ -1,0 +1,63 @@
+{% extends 'blog/base.html' %}
+
+{% block main %}
+
+<div class="container-fluid" style="flex: 1;background-color: #f8f9fa;">
+    <div class="row">
+      <!-- 应付宽屏，左边留白 -->
+      <div class="col-xxl-2"></div>
+        <main class="col-md-9 col-xxl-7 p-5">
+            {% for post in post_list %}
+
+                <div class="post-box border-bottom mt-3">
+                    <h2 class="text-center m-3"><a href="/blog/{{ post.title }}">{{ post.title }}</a></h2>
+                    <div class="text-center m-1">
+                        <a href="#">{{ post.author }}</a>&nbsp;
+                        <a href="#">{{ post.category }}</a>&nbsp;
+                        5 评论&nbsp;
+                        5 阅读&nbsp;
+                    </div>
+                    <div>
+                        <p>
+                        {{ post.excerpt }}
+                        </p>
+                    </div>
+                </div>
+
+            {% empty %}
+                <h2>何もありません。</h2>
+            {% endfor %}
+            
+            <nav class="container-fluid mt-5">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item"><a class="page-link" href="#"> <<< </a></li>
+                  <li class="page-item"><a class="page-link" href="#" aria-current="true">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">...</a></li>
+                  <li class="page-item"><a class="page-link" href="#">5</a></li>
+                  <li class="page-item"><a class="page-link" href="#">>>></a></li>
+                </ul>
+            </nav>
+        </main>
+        <aside class="col-md-3 col-xxl-3 p-3">
+            <div class="card-box" style="overflow-wrap: break-word;word-wrap: break-word;">
+                <h3>最新文章</h3>
+                <ul>
+                    <li><a href="#">title1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfj</a></li>
+                    <li><a href="#">title2</a></li>
+                    <li><a href="#">title3</a></li>
+                </ul>
+            </div>
+            <div class="card-box">
+                <h3>友链</h3>
+                <ul>
+                    <li><a href="#">知乎</a></li>
+                    <li><a href="#">那个CSDN</a></li>
+                    <li><a href="#">博客园</a></li>
+                </ul>
+            </div>
+        </aside>
+    </div>
+</div>
+
+{% endblock main %}
