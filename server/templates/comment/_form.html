@@ -1,0 +1,8 @@
+<div class="comment-form m-5 border">
+    <h3 class="border-bottom m-2">发起评论</h3>
+    <form class="p-2" action="{% url 'comments:comment' post.id %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">发表</button>
+    </form>
+</div>

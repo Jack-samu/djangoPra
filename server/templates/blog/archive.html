@@ -1,0 +1,162 @@
+{% extends 'blog/base.html' %}
+
+{% block main %}
+<div class="timeline">
+    {% regroup posts by created_time.year as year_list %}
+      
+    {% for year in year_list %}
+    <div class="year-group">
+      <div class="year-label">{{ year.grouper }}</div>
+  
+      {% regroup year.list by created_time.month as month_list %}
+      {% for month in month_list %}
+  
+      <div class="month-group {% cycle 'left' 'right' %}">
+        <div class="month-header" onclick="togglePosts(this)">
+          <span>{{ year.grouper }}-{{ month.grouper|stringformat:"02d" }}</span>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="post-list">
+          {% for post in month.list %}
+          <div class="post-item">
+            <div class="post-content">
+              <time>{{ post.created_time|date:"Y-m-d" }}</time>
+              <h3 class="post-title">
+                  <a href="{% url 'blog:get_post' post.title %}">{{ post.title }}</a>
+              </h3>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  
+  <script>
+    function togglePosts(header) {
+        const postList = header.nextElementSibling;
+        const arrow = header.querySelector('.arrow');
+        
+        postList.classList.toggle('active');
+        arrow.classList.toggle('active');
+    }
+  </script>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+  
+    /* 时间轴主线 */
+    .timeline {
+        position: relative;
+        max-width: 800px;
+        margin: 50px auto;
+    }
+  
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #ddd;
+        transform: translateX(-50%);
+    }
+  
+    /* 年份节点 */
+    .year-group {
+        position: relative;
+        margin: 40px 0;
+    }
+  
+    .year-label {
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        padding: 10px;
+        background: #f5af10;
+        color: white;
+        text-align: center;
+        border-radius: 5px;
+        font-size: 20px;
+    }
+  
+    /* 月份节点 */
+    .month-group {
+        position: relative;
+        margin: 30px 0;
+        width: 45%;
+        transition: all 0.3s;
+    }
+  
+    .month-group.left {
+        left: 0;
+    }
+  
+    .month-group.right {
+        left: 55%;
+    }
+  
+    .month-header {
+        padding: 15px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+  
+    .month-header:hover {
+        background: #f8f9fa;
+    }
+  
+    /* 文章列表 */
+    .post-list {
+        list-style: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        padding-left: 20px;
+    }
+  
+    .post-list.active {
+        max-height: 500px; /* 根据实际内容调整 */
+    }
+  
+    .post-item {
+        padding: 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 4px;
+    }
+  
+    /* 箭头图标 */
+    .arrow {
+        transition: transform 0.3s;
+    }
+  
+    .arrow.active {
+        transform: rotate(180deg);
+    }
+  
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+        .month-group {
+            width: 90%;
+            left: 5% !important;
+        }
+        
+        .timeline::before {
+            left: 20px;
+        }
+    }
+  </style>
+{% endblock %}

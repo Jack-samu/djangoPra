@@ -14,8 +14,8 @@
                     <div class="text-center m-1">
                         <a href="#">{{ post.author }}</a>&nbsp;
                         <a href="#">{{ post.category }}</a>&nbsp;
-                        5 评论&nbsp;
-                        5 阅读&nbsp;
+                        {{ post.comment_set.count }}评论&nbsp;
+                        {{ post.views }}阅读
                     </div>
                     <div>
                         <p>
@@ -28,25 +28,58 @@
                 <h2>何もありません。</h2>
             {% endfor %}
             
-            <nav class="container-fluid mt-5">
-                <ul class="pagination justify-content-center">
-                  <li class="page-item"><a class="page-link" href="#"> <<< </a></li>
-                  <li class="page-item"><a class="page-link" href="#" aria-current="true">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">...</a></li>
-                  <li class="page-item"><a class="page-link" href="#">5</a></li>
-                  <li class="page-item"><a class="page-link" href="#">>>></a></li>
-                </ul>
-            </nav>
+            <div class="pagination-container" style="margin-top: auto; padding-top: 30px;">
+                <nav class="container-fluid mt-5">
+                    <ul class="pagination justify-content-center">
+                        {% if post_list.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ post_list.previous_page_number }}" tabindex="-1"> <<< </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1"> <<< </a>
+                            </li>
+                        {% endif %}
+    
+                      {% for num in post_list.paginator.page_range %}
+                            {% if post_list.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#" aria-current="true">{{ num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{num}}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                      {% endfor %}
+    
+                      {% if post_list.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ post_list.next_page_number }}">>>></a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">>>></a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
         </main>
         <aside class="col-md-3 col-xxl-3 p-3">
             <div class="card-box" style="overflow-wrap: break-word;word-wrap: break-word;">
                 <h3>最新文章</h3>
-                <ul>
-                    <li><a href="#">title1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfjtitle1dsklfj</a></li>
-                    <li><a href="#">title2</a></li>
-                    <li><a href="#">title3</a></li>
-                </ul>
+                {% for post in latests %}
+
+                    <ul>
+                        <li><a href="/blog/{{post.title}}">{{post.title}}</a></li>
+                    </ul>
+
+                {% empty %}
+
+                    <h2>何もありません。</h2>
+
+                {% endfor %}
             </div>
             <div class="card-box">
                 <h3>友链</h3>

@@ -1,38 +1,230 @@
 {% extends 'blog/base.html' %}
 
+{% load customize_form %}
+
 {% block main %}
 
-<div class="container-fluid" style="flex: 1;">
-    <div class="row">
-        <div class="col-xxl-2 bg-dark"></div>
-        <div class="col-lg-8 col-xxl-8">
-            <div class="content mt-3">
-                <h2 class="text-center m-3">{{ post.title }}</h2>
-                <div class="text-center m-1">
-                    <a href="#">{{ post.author }}</a>&nbsp;
-                    {{ post.created_time }}
-                </div>
-                <div>
-                    {{ post.content }}
-                </div>
+    <div class="content-row">
+        <div class="aside-left"></div>
+        <div class="content">
+            <h2 class="text-center m-3">{{ post.title }}</h2>
+            <div class="text-center m-1">
+                <a href="#">{{ post.author }}</a>&nbsp;
+                {{ post.created_time }}
             </div>
+            <div>
+                {{ post.content | safe }}
+            </div>
+            
+            {% get_form post %}
+            {% show_comments post %}
         </div>
-        <div class="col-lg-4 col-xxl-2 mt-5">
+        <div class="aside-right">
+            {% if post.toc %}
             <div class="card bg-secordary text-black p-2">
                 <p><strong>目录</strong></p>
-                <ul>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                </ul>
+                    {{ post.toc |safe }}
             </div>
+            {% endif %}
         </div>
     </div>
-    <div class="container-fluid bg-primary text-white">
-        评论区
-    </div>
-</div>
+
+<script>
+    // blog/detail.html
+    const codeBlocks = document.querySelectorAll('pre.codehilite')
+   
+   codeBlocks.forEach(block => {
+       const codeLanguage = block.classList[0].split('-')[1]
+       const codeText = block.innerText
+   
+       const newCodeContainer = `
+           <div class="code-container">
+               <div class="code-header">
+                   <span class="language-tag">shell</span>
+                   <button class="copy-btn">复制</button>
+               </div>
+               <pre class="language-${codeLanguage} line-numbers"><code class="language-${codeLanguage}">${codeText}</code></pre>
+           </div>
+       `
+       block.outerHTML = newCodeContainer
+   })
+   
+   // 初始化Prism高亮
+   document.addEventListener('DOMContentLoaded', function() {
+       // 手动触发代码高亮
+       Prism.highlightAll();
+   
+       // 复制功能保持原有逻辑
+       document.querySelectorAll('.copy-btn').forEach(btn => {
+           btn.addEventListener('click', function() {
+               const code = this.closest('.code-container')
+                              .querySelector('code').textContent;
+               
+               navigator.clipboard.writeText(code).then(() => {
+                   this.textContent = '已复制!';
+                   setTimeout(() => {
+                       this.textContent = '复制';
+                   }, 2000);
+               });
+           });
+       });
+   });
+   
+   // 动态内容处理示例（如需AJAX加载内容后调用）
+   function loadNewCode(content, language) {
+       const container = document.createElement('div');
+       container.className = 'code-container';
+       container.innerHTML = `
+           <div class="code-header">
+               <span class="language-tag">${language}</span>
+               <button class="copy-btn">复制</button>
+           </div>
+           <pre class="language-${language}"><code class="language-${language}">${content}</code></pre>
+       `;
+       document.body.appendChild(container);
+       
+       // 手动高亮新内容
+       Prism.highlightElement(container.querySelector('code'));
+   }
+</script>
+
+<style>
+.code-container {
+    position: relative;
+    background: #282c34;
+    border-radius: 6px;
+    margin: 20px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.language-tag {
+    color: #abb2bf;
+    font-size: 14px;
+    font-family: monospace;
+}
+
+.copy-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #abb2bf;
+    border: none;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: monospace;
+    transition: all 0.2s;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 覆盖Prism默认样式 */
+pre[class*="language-"] {
+    margin: 0 !important;
+    border-radius: 0 0 6px 6px;
+    background: transparent;
+}
+/* 内容区 */
+.content-row {
+    flex: 1; 
+    display: flex; 
+    flex-direction: row;
+    width: 100%;
+    min-width: 0;
+}
+.content-row > [class^="aside-"], 
+.content-row > .content {
+    overflow: hidden; /* 隐藏溢出内容 */
+    min-width: 0;     /* 允许flex项收缩 */
+    
+    /* 通用文本处理 */
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    hyphens: auto;    /* 支持连字符 */
+}
+.content-row .aside-left {
+    flex: 0 0 20%;
+    height: 100%;
+}
+.content-row .content {
+    height: 100%;
+    flex: 0 0 60%;
+}
+.content-row .aside-right {
+    flex: 0 0 20%;
+    height: 100%;
+}
+/* 特定区域增强 */
+.aside-left,
+.aside-right {
+    padding: 15px;   /* 添加内边距 */
+    
+    /* 嵌套元素处理 */
+    & > * {
+        max-width: 100%;
+        overflow: auto;
+    }
+}
+
+.content {
+    /* 主内容区特殊处理 */
+    container-type: inline-size; /* 启用容器查询 */
+    
+    /* 处理各种元素溢出 */
+    img, pre, table {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* 长链接处理 */
+    a {
+        display: inline-block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+/* 页脚 */
+.blog-footer {
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+}
+@media screen and (max-width: 768px) {
+    .aside-left, .aside-right {
+        display: none;
+    }
+    .content {
+        flex: 1 0 100% !important; /* 强制占满宽度 */
+        max-width: 100% !important;
+        padding: 0 15px; /* 保持内容边距 */
+        margin: 0 auto; /* 居中显示 */
+        container-type: normal; /* 移动端禁用容器查询 */
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 1200px) {
+    .aside-left {
+        display: none;
+    }
+    .content-row .content {
+        margin-left: 5px;
+        flex: 0 0 63%;
+    }
+    .content-row .aside-right {
+        flex: 0 0 35%;
+    }
+}
+</style>
 
 {% endblock main %}

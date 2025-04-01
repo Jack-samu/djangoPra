@@ -1,0 +1,15 @@
+<div class="comment-list mt-4">
+    <h4>已有评论（{{ comments|length }}条）</h4>
+    {% for comment in comments %}
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="text-muted small">
+                {{ comment.author }}&nbsp;{{ comment.created_time|date:"Y-m-d H:i" }} 
+            </div>
+            <p class="card-text">{{ comment.content }}</p>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">暂无评论</p>
+    {% endfor %}
+</div>
