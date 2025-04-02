@@ -45,124 +45,63 @@
 flowchart TD
     %% Client Layer
     subgraph "Client Layer"
-        UI["Vue Web Dashboard"]:::client
+        Client("Client (Browser)"):::client
     end
 
-    %% API/Middleware Layer
-    subgraph "API/Middleware Layer"
-        API["API Endpoints"]:::api
-        Router["Router Layer"]:::api
-        Middleware["Security Middleware"]:::api
+    %% Django Core Layer
+    subgraph "Django Core Layer"
+        DjangoCore("Django Core Server"):::core
     end
 
-    %% Core WAF Engine
-    subgraph "Core WAF Engine"
-        Engine["WAF Engine Core"]:::core
-        Proxy["Proxy/Content Inspection"]:::core
-        Task["Task Scheduler"]:::core
-        Init["Initialization Module"]:::core
-        Engine --> Proxy
-        Engine --> Task
-        Engine --> Init
+    %% Applications Layer
+    subgraph "Applications Layer"
+        BlogApp("Blog App"):::app
+        CommentsApp("Comments App"):::app
+        HomeApp("Home App"):::app
+        BlogAdmin("Blog Admin Interface"):::admin
+        CommentsAdmin("Comments Admin Interface"):::admin
     end
 
-    %% Configuration & Rules Management
-    subgraph "Configuration & Rules Management"
-        Config["Configuration Files"]:::config
-        Templates["Rule Templates"]:::config
+    %% Resources Layer
+    subgraph "Resources Layer"
+        StaticAssets("Static Assets"):::resource
+        Templates("Templates"):::resource
     end
 
-    %% Data Persistence and Logging
-    subgraph "Data Persistence and Logging"
-        DB[(Database/Log Storage)]:::data
-        Cache["Cache Mechanism"]:::data
-        Models["Data Models"]:::data
-    end
+    %% Connections
+    Client -->|"HTTP_Request"| DjangoCore
+    DjangoCore -->|"route_blog"| BlogApp
+    DjangoCore -->|"route_comment"| CommentsApp
+    DjangoCore -->|"route_home"| HomeApp
 
-    %% Notification & Messaging
-    subgraph "Notification & Messaging"
-        Notify["Notification Services"]:::notify
-        WeChat["WeChat Integration"]:::notify
-    end
+    BlogApp -->|"renders_using"| Templates
+    BlogApp -->|"loads"| StaticAssets
 
-    %% Auxiliary Tools
-    subgraph "Auxiliary Tools"
-        Bot["WAF Bot"]:::aux
-        SecTool["WAF Security"]:::aux
-        OWASP["WAF OWASP"]:::aux
-        Update["WAF Update"]:::aux
-    end
+    CommentsApp -->|"renders_using"| Templates
 
-    %% Deployment Infrastructure
-    subgraph "Deployment Infrastructure"
-        Docker["Dockerfile"]:::deploy
-        Compose["Docker Compose"]:::deploy
-        GitHub["CI/CD Config (GitHub)"]:::deploy
-        Gitea["CI/CD Config (Gitea)"]:::deploy
-    end
+    HomeApp -->|"renders_using"| Templates
+    HomeApp -->|"loads"| StaticAssets
 
-    %% Relationships
-    UI -->|"sendsRequests"| API
-    UI -->|"sendsRequests"| Router
-    UI -->|"sendsRequests"| Middleware
+    BlogApp -->|"admin_panel"| BlogAdmin
+    CommentsApp -->|"admin_panel"| CommentsAdmin
 
-    API -->|"sendsTo"| Engine
-    Router -->|"routesTo"| Engine
-    Middleware -->|"secures"| Engine
-
-    Config -->|"loadRules"| Engine
-    Templates -->|"loadRules"| Engine
-
-    Engine -->|"logs"| DB
-    DB -->|"displayData"| UI
-
-    Engine -->|"alerts"| Notify
-    Notify -->|"notifyVia"| WeChat
-
-    Engine -->|"integrates"| Bot
-    Engine -->|"integrates"| SecTool
-    Engine -->|"integrates"| OWASP
-    Engine -->|"integrates"| Update
-
-    Docker ---|"deploys"| Engine
-    Compose ---|"deploys"| Engine
-    GitHub ---|"deploys"| Engine
-    Gitea ---|"deploys"| Engine
+    BlogApp -->|"integrates_with"| CommentsApp
 
     %% Click Events
-    click UI "https://github.com/samwafgo/samwaf/blob/main/vue/dist/index.html"
-    click API "https://github.com/samwafgo/samwaf/tree/main/api/"
-    click Router "https://github.com/samwafgo/samwaf/tree/main/router/"
-    click Middleware "https://github.com/samwafgo/samwaf/tree/main/middleware/"
-    click Engine "https://github.com/samwafgo/samwaf/tree/main/wafenginecore"
-    click Proxy "https://github.com/samwafgo/samwaf/tree/main/wafproxy"
-    click Task "https://github.com/samwafgo/samwaf/tree/main/waftask"
-    click Init "https://github.com/samwafgo/samwaf/tree/main/wafinit"
-    click Config "https://github.com/samwafgo/samwaf/blob/main/conf/config.yml"
-    click Templates "https://github.com/samwafgo/samwaf/tree/main/codetemplete"
-    click DB "https://github.com/samwafgo/samwaf/blob/main/wafdb/gormlogger.go"
-    click Cache "https://github.com/samwafgo/samwaf/tree/main/cache/"
-    click Models "https://github.com/samwafgo/samwaf/tree/main/model/"
-    click Notify "https://github.com/samwafgo/samwaf/blob/main/wafnotify/wafnotify.go"
-    click WeChat "https://github.com/samwafgo/samwaf/tree/main/utils/wechat/"
-    click Bot "https://github.com/samwafgo/samwaf/tree/main/wafbot/"
-    click SecTool "https://github.com/samwafgo/samwaf/tree/main/wafsec/"
-    click OWASP "https://github.com/samwafgo/samwaf/tree/main/wafowasp/"
-    click Update "https://github.com/samwafgo/samwaf/tree/main/wafupdate/"
-    click Docker "https://github.com/samwafgo/samwaf/tree/main/Dockerfile"
-    click Compose "https://github.com/samwafgo/samwaf/blob/main/docker-compose.yml"
-    click GitHub "https://github.com/samwafgo/samwaf/tree/main/.github/"
-    click Gitea "https://github.com/samwafgo/samwaf/tree/main/.gitea/"
+    click DjangoCore "https://github.com/jack-samu/djangopra/tree/main/server/server/"
+    click BlogApp "https://github.com/jack-samu/djangopra/tree/main/server/blog/"
+    click CommentsApp "https://github.com/jack-samu/djangopra/tree/main/server/comments/"
+    click HomeApp "https://github.com/jack-samu/djangopra/tree/main/server/home/"
+    click StaticAssets "https://github.com/jack-samu/djangopra/tree/main/server/static/"
+    click Templates "https://github.com/jack-samu/djangopra/tree/main/server/templates/"
 
     %% Styles
-    classDef client fill:#cce5ff,stroke:#003366,stroke-width:2px;
-    classDef api fill:#d4edda,stroke:#155724,stroke-width:2px;
-    classDef core fill:#fff3cd,stroke:#856404,stroke-width:2px;
-    classDef config fill:#f8d7da,stroke:#721c24,stroke-width:2px;
-    classDef data fill:#d1ecf1,stroke:#0c5460,stroke-width:2px;
-    classDef notify fill:#e2e3e5,stroke:#6c757d,stroke-width:2px;
-    classDef aux fill:#fefefe,stroke:#6c757d,stroke-width:2px;
-    classDef deploy fill:#e6ccff,stroke:#6f42c1,stroke-width:2px;
+    classDef client fill:#AED6F1,stroke:#1B4F72,stroke-width:2px;
+    classDef core fill:#A9DFBF,stroke:#1E8449,stroke-width:2px;
+    classDef app fill:#F9E79F,stroke:#B7950B,stroke-width:2px;
+    classDef resource fill:#D2B4DE,stroke:#6C3483,stroke-width:2px;
+    classDef admin fill:#F5B7B1,stroke:#922B21,stroke-width:2px;
+
 ```
 
 
